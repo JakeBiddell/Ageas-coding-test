@@ -30,7 +30,7 @@ const StatusBadge = ({ status }: { status: Status }) => {
         {
           [active]: status === "active",
           [inactive]: status === "inactive",
-          [away]: "away",
+          [away]: status === "away",
         },
       ])}
     />

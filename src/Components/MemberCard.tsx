@@ -6,16 +6,19 @@ import StatusBadge from "./StatusBadge";
 
 const useStyles = makeStyles({
   card: {
-    height: "20px",
     width: "308px",
     border: "1px solid #707070",
     display: "flex",
     margin: "10px",
+    padding: "10px",
+    paddingLeft: "15px",
+    backgroundColor: "#fff",
+    alignItems: "center",
   },
   content: {
     flex: "1 0 auto",
-    display: "flex",
-    justifyContent: "center",
+    textAlign: "left",
+    paddingLeft: "15px",
   },
   nameText: {
     fontSize: "16px",
@@ -24,6 +27,7 @@ const useStyles = makeStyles({
   statusText: {
     fontSize: "14px",
     color: "#707070",
+    fontStyle: "italic",
   },
 });
 
