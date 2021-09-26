@@ -1,15 +1,18 @@
 import React from "react";
-import logo from "./logo.svg";
+import { Provider } from "react-redux";
 import "./App.css";
 import MembersPage from "./Pages/MembersPage";
+import { store } from "./Slices";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <MembersPage />
-      </header>
-    </div>
+    <Provider store={store}>
+      <div className="App">
+        <header className="App-header">
+          <MembersPage />
+        </header>
+      </div>
+    </Provider>
   );
 }
 
