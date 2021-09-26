@@ -1,10 +1,12 @@
+export type SortDirection = "asc" | "desc";
+
 export type PaginatedList<Entity> = {
   ids: number[];
-  sort: {
+  sort?: {
     column: keyof Entity;
-    direction: "asc" | "desc";
+    direction: SortDirection;
   };
-  filter: {
+  filter?: {
     column: keyof Entity;
     value: any;
   };
