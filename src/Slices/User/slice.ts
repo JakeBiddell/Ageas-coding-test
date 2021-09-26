@@ -1,14 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PaginatedList, SortDirection, User } from "../../Types";
+import { UserState } from "./types";
 
-type State = {
-  entityStore: { [key: number]: User };
-  loading: boolean;
-  paginatedLists: { [id: string]: PaginatedList<User> };
-  error: string | undefined;
-};
 
-const initialState: State = {
+
+const initialState: UserState = {
   entityStore: {},
   loading: false,
   paginatedLists: {},
@@ -16,7 +12,7 @@ const initialState: State = {
 };
 
 const recalcPaginatedList = (
-  state: State,
+  state: UserState,
   { filter, sort }: PaginatedList<User>
 ) => {
   const allEntities = Object.values(state.entityStore);
@@ -24,7 +20,7 @@ const recalcPaginatedList = (
     ? allEntities
     : allEntities.filter((e) => e[filter.column] === filter.value);
   const sortedEntities = !sort
-    ? allEntities
+    ? filteredEntities
     : filteredEntities.sort(
         sort.direction === "asc"
           ? (a, b) =>
@@ -53,6 +49,16 @@ const userSlice = createSlice({
           {}
         ),
       };
+      state.paginatedLists = Object.entries(state.paginatedLists).reduce(
+        (accumulator, [key, val]) => ({
+          ...accumulator,
+          [key]: {
+            ...val,
+            ids: recalcPaginatedList(state, val),
+          } as PaginatedList<User>,
+        }),
+        {}
+      );
     },
     errorGettingEntities(state, { payload }: PayloadAction<string>) {
       state.loading = false;
@@ -102,6 +108,13 @@ const userSlice = createSlice({
         state.paginatedLists[listId]
       );
     },
+    clearFilter(state, {payload}: PayloadAction<string>){
+      state.paginatedLists[payload].filter = undefined
+      state.paginatedLists[payload].ids = recalcPaginatedList(
+        state,
+        state.paginatedLists[payload]
+      );
+    }
   },
 });
 

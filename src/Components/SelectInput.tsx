@@ -23,7 +23,7 @@ const SelectInput = ({ label, values, onChange }: Props) => {
   const options = useMemo(
     () =>
       Object.entries(values).map(([key, val]) => (
-        <option value={key}>{val}</option>
+        <option key={key} value={key}>{val}</option>
       )),
     [values]
   );
