@@ -6,15 +6,24 @@ import MemberCard from "./MemberCard";
 import SelectInput from "./SelectInput";
 
 const listId = "MembersList";
+const earliestDateOfBirth = (() => {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() - 18);
+  return date;
+})();
 
 const MembersList = () => {
   const dispatch = useDispatch();
   const users = useSelector((state: any) =>
     userSelectors.getUsers(state)(listId)
   );
-  const userComponents = useMemo(
-    () => users?.map((u) => <MemberCard key={u.id} {...u} />),
+  const over18s = useMemo(
+    () => users.filter((u) => new Date(u.dateOfBirth) <= earliestDateOfBirth),
     [users]
+  );
+  const userComponents = useMemo(
+    () => over18s?.map((u) => <MemberCard key={u.id} {...u} />),
+    [over18s]
   );
   useEffect(() => {
     dispatch(userActions.addPaginatedList(listId));
