@@ -15,7 +15,27 @@ const initialState: State = {
   error: undefined,
 };
 
-const slice = createSlice({
+const recalcPaginatedList = (
+  state: State,
+  { filter, sort }: PaginatedList<User>
+) => {
+  const allEntities = Object.values(state.entityStore);
+  const filteredEntities = !filter
+    ? allEntities
+    : allEntities.filter((e) => e[filter.column] === filter.value);
+  const sortedEntities = !sort
+    ? allEntities
+    : filteredEntities.sort(
+        sort.direction === "asc"
+          ? (a, b) =>
+              a[sort.column].toString().localeCompare(b[sort.column].toString())
+          : (a, b) =>
+              b[sort.column].toString().localeCompare(a[sort.column].toString())
+      );
+  return sortedEntities.map((e) => e.id);
+};
+
+const userSlice = createSlice({
   name: "User",
   initialState,
   reducers: {
@@ -61,17 +81,30 @@ const slice = createSlice({
       }>
     ) {
       state.paginatedLists[listId].sort = { column, direction };
-      const allEntities = Object.values(state.entityStore);
-      const filter = state.paginatedLists[listId].filter;
-      const filteredEntities = !filter
-        ? allEntities
-        : allEntities.filter((e) => e[filter.column] === filter.value);
-      const sortedEntities = filteredEntities.sort(
-        direction === "asc"
-          ? (a, b) => a[column].toString().localeCompare(b[column].toString())
-          : (a, b) => b[column].toString().localeCompare(a[column].toString())
+      state.paginatedLists[listId].ids = recalcPaginatedList(
+        state,
+        state.paginatedLists[listId]
       );
-      state.paginatedLists[listId].ids = sortedEntities.map((e) => e.id);
+    },
+    filterPaginatedList(
+      state,
+      {
+        payload: { listId, column, value },
+      }: PayloadAction<{
+        listId: string;
+        column: keyof User;
+        value: any;
+      }>
+    ) {
+      state.paginatedLists[listId].filter = { column, value };
+      state.paginatedLists[listId].ids = recalcPaginatedList(
+        state,
+        state.paginatedLists[listId]
+      );
     },
   },
 });
+
+const { actions: userActions, reducer: userReducer } = userSlice;
+
+export { userSlice, userActions, userReducer };
